@@ -4,25 +4,36 @@
 % Porownanie odpowiedzi skokowej układu ciągłego i dyskretnego
 
 % Ciagly
-c_nom = 1;
+c_nom = [ 0, 0, 1 ];
 c_denom = [ 1, 3, 2];
 
 % Create transfer fucntion model
-cont_model = tf ( c_nom, c_denom );
+cont_model = tf ( c_nom , c_denom );
 
 % Create discrete model
-Ts = 0.01; % TIME SAMPLE
+Ts = 0.1; % TIME SAMPLE
 disc_model = c2d( cont_model, Ts );
 
-disc_nom = disc_model.Numenator;
-disc_denom = disc_model.Denominator;
+%disc_nom = disc_model{1,1}.Numerator;
+%disc_denom = disc_model.Denominator;
 
 % Step disturbance parameters
     time_step = 0; % step time
     init_value = 0; % initial value
     final_value = 1; % final value
     
-    
+t = 0:0.001:20;
+
 % Simulation
-sim('sim_lab5.slx');
+model = sim('sim_lab5.slx');
+
+figure('Odpowiedzi')
+
+plot(t, model.dyskr);
+hold on;
+plot(t, model.ciagly);
+
+title('Porownanie odpowiedzi ukladu ciaglego i dyskretnego')
+
+saveas('Porownanie', 'png');
 

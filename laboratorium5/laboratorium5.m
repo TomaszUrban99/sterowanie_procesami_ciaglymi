@@ -11,7 +11,7 @@ c_denom = [ 1, 3, 2];
 cont_model = tf ( c_nom , c_denom );
 
 % Create discrete model
-Ts = 0.1; % TIME SAMPLE
+Ts = 0.5; % TIME SAMPLE
 disc_model = c2d( cont_model, Ts );
 
 %disc_nom = disc_model{1,1}.Numerator;
@@ -22,7 +22,10 @@ disc_model = c2d( cont_model, Ts );
     init_value = 0; % initial value
     final_value = 1; % final value
     
-    
+t = 0:0.00001:20;
+n = 0:1:20;
+
 % Simulation
-sim('sim_lab5.slx');
+model = sim('sim_lab5.slx');
+
 

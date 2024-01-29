@@ -2,6 +2,8 @@
 % Tomasz Urban
 % Numer indeksu: 247 428
 
+hold on;
+
 % Parametry modelu
 M = 0.5;    % masa wozka
 m = 0.2;    % masa wahadla
@@ -25,14 +27,86 @@ C = [   1, 0, 0, 0;
         0, 0, 0, 1; ];
 
 D = [   0; 0; 0; 0; ];
-        
-Q = observe(
 
-% Oczekiwane wartosci
-a = 1;
+% Dopuszczalne wartosci elementow na diagonali
+
+Q_diag = [ 
+        1, 1, 1, 1;
+        10, 1, 1, 1;
+        1, 10, 10, 10;
+        10, 10, 1, 1;
+        10, 10, 10, 1;
+         ];
+
+% Wektor kosztow sterowania
+    R_vect = [ 1, 10];
+
+% Wektor oczekiwanych wartosci
+    a = [ 1, 5 ];
 
 % Definicja wejscia
-y_input = [ a, 0, 0, 0];
+    y_input = [ a(1), 0, 0, 0];
+    
+    t=0:0.001:40;
 
-% Symulacja
-model = sim('lab3_zadanie1_model.slx');
+for i=1:1:length(a)
+    
+    % New set-point
+    y_input(1) = a(i);
+
+    for j=1:1:length(R_vect)
+        
+        % New steering cost
+        R = R_vect(j);
+
+        for k=1:1:length(Q_diag)
+
+            % Set new state cost
+            Q = setQ(Q_diag,k);
+            
+            % Create state space model
+            system = ss(A,B,C,D); 
+
+            % Compute new gain
+            K = lqr(system, Q, R);
+            
+            % Symulacja
+            model = sim('lab3_zadanie1_model.slx');
+
+            name = "y out: " + string(y_input(1)) + ", R: " + string(R) + ", Q set: " + string(k);
+
+            % Create figure
+            fig = figure('Name', name);
+            figure(fig);
+
+            subplot(2,1,1);
+  
+            plot(t,model.error);
+            title('Blad');
+            
+            hold on;
+
+            subplot(2,1,2);
+
+            plot(t,model.output);
+
+            hold on;
+            
+            plot(t,model.output1);
+            plot(t,model.output2);
+            plot(t,model.output3);
+
+            legend('y(1)', 'y(2)', 'y(3)', 'y(4)');
+            
+            title('Wspolrzedne');
+            saveas(fig, name, 'png');
+        end
+    end
+end
+
+
+
+
+
+
+
